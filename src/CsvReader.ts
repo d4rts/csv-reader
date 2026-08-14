@@ -8,7 +8,7 @@ import type {
     CsvRefreshCallback
 } from './types';
 
-const DEFAULT_OPTIONS: Required<CsvReaderOptions> = {
+const DEFAULT_OPTIONS = {
     delimiter: ',',
     autoDetectDelimiter: true,
     autoRefresh: false,
@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS: Required<CsvReaderOptions> = {
 };
 
 export class CsvReader {
-    private readonly options: Required<CsvReaderOptions>;
+    private readonly options: CsvReaderOptions & typeof DEFAULT_OPTIONS;
     private preview?: CsvPreview;
     private timer?: number;
     private lastContent?: string;
@@ -55,6 +55,8 @@ export class CsvReader {
         this.preview = new CsvPreview(() => {
             this.stop();
             this.preview = undefined;
+
+            this.options.onClose?.();
         });
 
         this.preview.open(data, options);

@@ -10,6 +10,7 @@ export interface CsvReaderOptions {
     autoRefresh?: boolean;
     refreshInterval?: number;
     hasHeader?: boolean;
+    onClose?: () => void;
 }
 
 export interface CsvPreviewOptions {
