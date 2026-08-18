@@ -93,6 +93,21 @@ export function injectCsvReaderStyle(): void {
         .csv-reader-table tbody tr:nth-child(even) td {
             background: #fafafa;
         }
+        
+        .csv-reader-line-number {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            min-width: 50px;
+            text-align: right !important;
+            background: #f3f4f6 !important;
+            color: #6b7280;
+            user-select: none;
+        }
+        
+        .csv-reader-table thead .csv-reader-line-number {
+            z-index: 3;
+        }
     `;
 
     document.head.appendChild(style);

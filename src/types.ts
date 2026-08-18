@@ -17,6 +17,8 @@ export interface CsvPreviewOptions {
     title?: string;
     maxRows?: number;
     stickyHeader?: boolean;
+    showLineNumbers?: boolean;
+    followNewLines?: boolean;
 }
 
 export type CsvRefreshCallback = (data: CsvData) => void;

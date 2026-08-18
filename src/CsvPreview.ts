@@ -44,11 +44,23 @@ export class CsvPreview {
     }
 
     render(data: CsvData, options: CsvPreviewOptions = {}): void {
-        if (!this.tableContainer) return;
+        if (!this.tableContainer) {
+            return;
+        }
 
         if (this.titleElement && options.title) {
             this.titleElement.textContent = options.title;
         }
+
+        const previousScrollTop = this.tableContainer.scrollTop;
+        const previousScrollLeft = this.tableContainer.scrollLeft;
+
+        const bottomTolerance = 10;
+
+        const wasAtBottom =
+            this.tableContainer.scrollHeight -
+            this.tableContainer.scrollTop -
+            this.tableContainer.clientHeight <= bottomTolerance;
 
         const info = document.createElement('div');
         info.className = 'csv-reader-info';
@@ -56,9 +68,10 @@ export class CsvPreview {
         const limit = options.maxRows ?? data.rows.length;
         const visibleRows = data.rows.slice(0, limit);
 
-        info.textContent = options.maxRows && data.totalRows > options.maxRows
-            ? `${options.maxRows} lignes affichées sur ${data.totalRows}`
-            : `${data.totalRows} lignes`;
+        info.textContent =
+            options.maxRows && data.totalRows > options.maxRows
+                ? `${options.maxRows} lignes affichées sur ${data.totalRows}`
+                : `${data.totalRows} lignes`;
 
         const table = document.createElement('table');
         table.className = 'csv-reader-table';
@@ -67,27 +80,64 @@ export class CsvPreview {
             table.classList.add('csv-reader-table-no-sticky');
         }
 
+        /*
+         * HEADER
+         */
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
 
+        if (options.showLineNumbers) {
+            const th = document.createElement('th');
+
+            th.textContent = '#';
+            th.className = 'csv-reader-line-number';
+
+            headerRow.appendChild(th);
+        }
+
         for (const header of data.headers) {
             const th = document.createElement('th');
+
             th.textContent = header;
+
             headerRow.appendChild(th);
         }
 
         thead.appendChild(headerRow);
         table.appendChild(thead);
 
+        /*
+         * BODY
+         */
         const tbody = document.createElement('tbody');
 
-        for (const row of visibleRows) {
+        for (let rowIndex = 0; rowIndex < visibleRows.length; rowIndex++) {
+            const row = visibleRows[rowIndex];
+
             const tr = document.createElement('tr');
-            const columnCount = Math.max(data.headers.length, row.length);
+
+            /*
+             * Numéro de ligne.
+             */
+            if (options.showLineNumbers) {
+                const td = document.createElement('td');
+
+                td.textContent = String(rowIndex + 1);
+                td.className = 'csv-reader-line-number';
+
+                tr.appendChild(td);
+            }
+
+            const columnCount = Math.max(
+                data.headers.length,
+                row.length
+            );
 
             for (let i = 0; i < columnCount; i++) {
                 const td = document.createElement('td');
+
                 td.textContent = row[i] ?? '';
+
                 tr.appendChild(td);
             }
 
@@ -95,7 +145,20 @@ export class CsvPreview {
         }
 
         table.appendChild(tbody);
+
         this.tableContainer.replaceChildren(info, table);
+
+        this.tableContainer.scrollLeft = previousScrollLeft;
+
+        /*
+         * Suivi automatique.
+         */
+        if (options.followNewLines && wasAtBottom) {
+            this.tableContainer.scrollTop =
+                this.tableContainer.scrollHeight;
+        } else {
+            this.tableContainer.scrollTop = previousScrollTop;
+        }
     }
 
     close(): void {
