@@ -11,5 +11,6 @@ export type {
     CsvErrorCallback,
     CsvPreviewOptions,
     CsvReaderOptions,
-    CsvRefreshCallback
+    CsvRefreshCallback,
+    CsvHeaderFormatter
 } from './types';

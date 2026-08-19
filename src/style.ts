@@ -108,6 +108,10 @@ export function injectCsvReaderStyle(): void {
         .csv-reader-table thead .csv-reader-line-number {
             z-index: 3;
         }
+        
+        .csv-reader-table-multiline th {
+            white-space: pre-line;
+        }
     `;
 
     document.head.appendChild(style);

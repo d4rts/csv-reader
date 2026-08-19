@@ -80,6 +80,10 @@ export class CsvPreview {
             table.classList.add('csv-reader-table-no-sticky');
         }
 
+        if (options.multiLineHeaders) {
+            table.classList.add("csv-reader-table-multiline");
+        }
+
         /*
          * HEADER
          */
@@ -95,10 +99,21 @@ export class CsvPreview {
             headerRow.appendChild(th);
         }
 
-        for (const header of data.headers) {
+        for (let columnIndex = 0;
+             columnIndex < data.headers.length;
+             columnIndex++) {
+
+            const header = data.headers[columnIndex];
+
             const th = document.createElement('th');
 
-            th.textContent = header;
+            th.textContent =
+                options.headerFormatter
+                    ? options.headerFormatter(
+                        header,
+                        columnIndex
+                    )
+                    : header;
 
             headerRow.appendChild(th);
         }
